@@ -44,8 +44,9 @@ namespace ModMenu.Framework.Screen
         private readonly IDictionary<string, string> _modUrls =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                ["Chucklefish"] = "https://community.playstarbound.com/resources/{0}",
                 ["GitHub"] = "https://github.com/{0}/releases",
+                ["Chucklefish"] = "https://community.playstarbound.com/resources/{0}",
+                ["ModDrop"] = "https://www.moddrop.com/stardew-valley/mods/{0}",
                 ["Nexus"] = "https://www.nexusmods.com/stardewvalley/mods/{0}"
             };
 
