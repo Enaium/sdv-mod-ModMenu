@@ -17,7 +17,7 @@ namespace ModMenu.Framework.Screen
         private Slot<ModInfoSlot> _slot;
         private Button _websiteButton;
 
-        public ModMenuScreen()
+        protected override void Init()
         {
             var mods = new List<IModInfo>();
             mods.AddRange(ModEntry.GetInstance().Helper.ModRegistry.GetAll());
@@ -38,13 +38,15 @@ namespace ModMenu.Framework.Screen
                 _slot.Height - 80, 200, 80);
             AddComponent(_websiteButton);
             AddComponent(_slot);
+            base.Init();
         }
 
         private readonly IDictionary<string, string> _modUrls =
             new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
             {
-                ["Chucklefish"] = "https://community.playstarbound.com/resources/{0}",
                 ["GitHub"] = "https://github.com/{0}/releases",
+                ["Chucklefish"] = "https://community.playstarbound.com/resources/{0}",
+                ["ModDrop"] = "https://www.moddrop.com/stardew-valley/mods/{0}",
                 ["Nexus"] = "https://www.nexusmods.com/stardewvalley/mods/{0}"
             };
 
@@ -62,8 +64,8 @@ namespace ModMenu.Framework.Screen
                     $"{GetTranslation("version")}:{_slot.SelectedEntry.ModInfo.Manifest.Version}",
                     $"{GetTranslation("description")}:"
                 };
-                texts.AddRange(FormatDesc(_slot.SelectedEntry.ModInfo.Manifest.Description,
-                    background.Width - _slot.Width).Split('#'));
+                texts.AddRange(Game1.parseText(_slot.SelectedEntry.ModInfo.Manifest.Description, Game1.dialogueFont,
+                    background.Width - _slot.Width).Split('\n'));
                 if (_slot.SelectedEntry.ModInfo.Manifest.Dependencies != null)
                 {
                     texts.Add(
@@ -124,19 +126,6 @@ namespace ModMenu.Framework.Screen
             return ModEntry.GetInstance().Helper.Translation.Get("modMenu." + key);
         }
 
-        private static string FormatDesc(string text, int width)
-        {
-            var temp = text;
-            for (var i = 0; i < text.Length; i++)
-            {
-                if (FontUtils.GetWidth(text.Substring(0, i)) <= width) continue;
-                temp = text.Insert(i, "#");
-                return temp;
-            }
-
-            return temp;
-        }
-
         private class ModInfoSlot : Slot<ModInfoSlot>.Entry
         {
             public IModInfo ModInfo;
@@ -150,7 +139,7 @@ namespace ModMenu.Framework.Screen
             {
                 Hovered = Render2DUtils.IsHovered(Game1.getMouseX(), Game1.getMouseY(), x, y, Width, Height);
                 FontUtils.Draw(b, ModInfo.Manifest.Name, x + 15, y + 10);
-                var desc = FormatDesc(ModInfo.Manifest.Description, Width).Split('#')[0];
+                var desc = Game1.parseText(ModInfo.Manifest.Description, Game1.smallFont, Width - 15).Split('\n')[0];
 
                 Utility.drawTextWithShadow(b, desc, Game1.smallFont,
                     new Vector2(x + 15, y + 10 + 30), Game1.textColor, 1f,
