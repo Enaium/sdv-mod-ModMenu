@@ -17,5 +17,13 @@
       "UniqueID": "Enaium.EnaiumToolKit",
       "MinimumVersion": "1.4.2"
     }
-  ]
+  ],
+  "Custom": {
+    "ModMenu": {
+      "Setting": "ModMenu.Framework.Screen.SettingScreen",
+      "badges": [
+        ""
+      ]
+    }
+  }
 }

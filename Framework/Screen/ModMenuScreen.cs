@@ -7,8 +7,11 @@ using EnaiumToolKit.Framework.Screen.Components;
 using EnaiumToolKit.Framework.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ModMenu.Framework.Entity;
+using Newtonsoft.Json;
 using StardewModdingAPI;
 using StardewValley;
+using StardewValley.Menus;
 
 namespace ModMenu.Framework.Screen
 {
@@ -16,6 +19,7 @@ namespace ModMenu.Framework.Screen
     {
         private Slot<ModInfoSlot> _slot;
         private Button _websiteButton;
+        private Button _settingButton;
 
         protected override void Init()
         {
@@ -29,15 +33,31 @@ namespace ModMenu.Framework.Screen
 
             foreach (var variable in ModEntry.GetInstance().Helper.ModRegistry.GetAll())
             {
-                _slot.AddEntry(new ModInfoSlot(variable));
+                ModMenuEntity modMenuEntity = null;
+
+                var manifestExtraFields = variable.Manifest.ExtraFields;
+                if (manifestExtraFields != null &&
+                    manifestExtraFields.ContainsKey("Custom"))
+                {
+                    var custom =
+                        JsonConvert.DeserializeObject<CustomEntity>(manifestExtraFields["Custom"].ToString());
+                    if (custom != null)
+                    {
+                        modMenuEntity = custom.ModMenu;
+                    }
+                }
+
+
+                _slot.AddEntry(new ModInfoSlot(variable, modMenuEntity));
             }
 
             _slot.SelectedEntry = _slot.Entries[0];
 
             _websiteButton = new Button(GetTranslation("button.website"), "", Game1.viewport.Width - _slot.X - 220,
                 _slot.Height - 80, 200, 80);
-            AddComponent(_websiteButton);
-            AddComponent(_slot);
+            _settingButton = new Button(GetTranslation("button.setting"), "", Game1.viewport.Width - _slot.X - 440,
+                _slot.Height - 80, 200, 80);
+            AddComponentRange(_websiteButton, _settingButton, _slot);
             base.Init();
         }
 
@@ -86,7 +106,7 @@ namespace ModMenu.Framework.Screen
                 var updateUrls = _slot.SelectedEntry.ModInfo.Manifest.UpdateKeys;
                 if (updateUrls != null)
                 {
-                    var updateUrl = GetUpdateUrl(updateUrls);
+                    var updateUrl = GetPageUrl(updateUrls);
                     if (updateUrl != null)
                     {
                         _websiteButton.OnLeftClicked = () => { Process.Start(updateUrl); };
@@ -101,12 +121,36 @@ namespace ModMenu.Framework.Screen
                 {
                     _websiteButton.Visibled = false;
                 }
+
+                var selectedEntryModMenu = _slot.SelectedEntry.ModMenu;
+
+                if (selectedEntryModMenu != null)
+                {
+                    var settingMenu = Type.GetType(selectedEntryModMenu.Setting);
+
+                    if (settingMenu != null)
+                    {
+                        _settingButton.OnLeftClicked = () =>
+                        {
+                            OpenScreenGui(Activator.CreateInstance(settingMenu) as IClickableMenu);
+                        };
+                        _settingButton.Visibled = true;
+                    }
+                    else
+                    {
+                        _settingButton.Visibled = false;
+                    }
+                }
+                else
+                {
+                    _settingButton.Visibled = false;
+                }
             }
 
             base.draw(b);
         }
 
-        private string GetUpdateUrl(IEnumerable<string> updateKeys)
+        private string GetPageUrl(IEnumerable<string> updateKeys)
         {
             foreach (var updateKey in updateKeys)
             {
@@ -129,10 +173,12 @@ namespace ModMenu.Framework.Screen
         private class ModInfoSlot : Slot<ModInfoSlot>.Entry
         {
             public IModInfo ModInfo;
+            public ModMenuEntity ModMenu;
 
-            public ModInfoSlot(IModInfo modInfo)
+            public ModInfoSlot(IModInfo modInfo, ModMenuEntity modMenu)
             {
                 ModInfo = modInfo;
+                ModMenu = modMenu;
             }
 
             public override void Render(SpriteBatch b, int x, int y)
@@ -145,6 +191,18 @@ namespace ModMenu.Framework.Screen
                     new Vector2(x + 15, y + 10 + 30), Game1.textColor, 1f,
                     -1f,
                     -1, -1, 0.0f);
+            }
+        }
+
+        protected void OpenScreenGui(IClickableMenu clickableMenu)
+        {
+            if (Game1.activeClickableMenu is TitleMenu)
+            {
+                TitleMenu.subMenu = clickableMenu;
+            }
+            else
+            {
+                Game1.activeClickableMenu = clickableMenu;
             }
         }
     }
