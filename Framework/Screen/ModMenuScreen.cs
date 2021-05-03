@@ -18,8 +18,10 @@ namespace ModMenu.Framework.Screen
     public class ModMenuScreen : GuiScreen
     {
         private Slot<ModInfoSlot> _slot;
-        private Button _websiteButton;
+        private Button _updateButton;
         private Button _settingButton;
+        private Button _homePageButton;
+        private Button _issuesButton;
 
         protected override void Init()
         {
@@ -53,11 +55,15 @@ namespace ModMenu.Framework.Screen
 
             _slot.SelectedEntry = _slot.Entries[0];
 
-            _websiteButton = new Button(GetTranslation("button.website"), "", Game1.viewport.Width - _slot.X - 220,
+            _homePageButton = new Button(GetTranslation("button.homePage"), "", Game1.viewport.Width - _slot.X - 220,
                 _slot.Height - 80, 200, 80);
-            _settingButton = new Button(GetTranslation("button.setting"), "", Game1.viewport.Width - _slot.X - 440,
+            _issuesButton = new Button(GetTranslation("button.issues"), "", Game1.viewport.Width - _slot.X - 440,
                 _slot.Height - 80, 200, 80);
-            AddComponentRange(_websiteButton, _settingButton, _slot);
+            _updateButton = new Button(GetTranslation("button.update"), "", Game1.viewport.Width - _slot.X - 440,
+                80, 200, 80);
+            _settingButton = new Button(GetTranslation("button.setting"), "", Game1.viewport.Width - _slot.X - 220,
+                80, 200, 80);
+            AddComponentRange(_homePageButton, _issuesButton, _updateButton, _settingButton, _slot);
             base.Init();
         }
 
@@ -109,17 +115,17 @@ namespace ModMenu.Framework.Screen
                     var updateUrl = GetPageUrl(updateUrls);
                     if (updateUrl != null)
                     {
-                        _websiteButton.OnLeftClicked = () => { Process.Start(updateUrl); };
-                        _websiteButton.Visibled = true;
+                        _updateButton.OnLeftClicked = () => { Process.Start(updateUrl); };
+                        _updateButton.Visibled = true;
                     }
                     else
                     {
-                        _websiteButton.Visibled = false;
+                        _updateButton.Visibled = false;
                     }
                 }
                 else
                 {
-                    _websiteButton.Visibled = false;
+                    _updateButton.Visibled = false;
                 }
 
                 var selectedEntryModMenu = _slot.SelectedEntry.ModMenu;
@@ -140,10 +146,44 @@ namespace ModMenu.Framework.Screen
                     {
                         _settingButton.Visibled = false;
                     }
+
+                    if (selectedEntryModMenu.Contact != null)
+                    {
+                        if (selectedEntryModMenu.Contact.HomePage != null)
+                        {
+                            _homePageButton.OnLeftClicked = () =>
+                            {
+                                Process.Start(selectedEntryModMenu.Contact.HomePage);
+                            };
+                            _homePageButton.Visibled = true;
+                        }
+                        else
+                        {
+                            _homePageButton.Visibled = false;
+                        }
+
+
+                        if (selectedEntryModMenu.Contact.Issues != null)
+                        {
+                            _issuesButton.OnLeftClicked = () => { Process.Start(selectedEntryModMenu.Contact.Issues); };
+                            _issuesButton.Visibled = true;
+                        }
+                        else
+                        {
+                            _issuesButton.Visibled = false;
+                        }
+                    }
+                    else
+                    {
+                        _homePageButton.Visibled = false;
+                        _issuesButton.Visibled = false;
+                    }
                 }
                 else
                 {
                     _settingButton.Visibled = false;
+                    _homePageButton.Visibled = false;
+                    _issuesButton.Visibled = false;
                 }
             }
 
@@ -194,7 +234,7 @@ namespace ModMenu.Framework.Screen
             }
         }
 
-        protected void OpenScreenGui(IClickableMenu clickableMenu)
+        public void OpenScreenGui(IClickableMenu clickableMenu)
         {
             if (Game1.activeClickableMenu is TitleMenu)
             {

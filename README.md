@@ -13,7 +13,7 @@ ModMenu
 
 `manifest.json`
 
-### SettingMenu
+### Setting
 
 namespace.className
 
@@ -22,6 +22,31 @@ namespace.className
   "Custom": {
     "ModMenu": {
       "Setting": "ModMenu.Framework.Screen.SettingScreen"
+    }
+  }
+}
+```
+
+```c#
+namespace ModMenu.Framework.Screen
+{
+    public class SettingScreen : IClickableMenu
+    {
+        
+    }
+}
+```
+
+### Contact
+
+```json
+{
+  "Custom": {
+    "ModMenu": {
+      "Contact": {
+        "HomePage": "https://github.com/Enaium-StardewValleyMods/ModMenu",
+        "Issues": "https://github.com/Enaium-StardewValleyMods/ModMenu/issues"
+      }
     }
   }
 }

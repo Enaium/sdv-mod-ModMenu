@@ -4,7 +4,9 @@
   "modMenu.version": "Version",
   "modMenu.description": "Description",
   "modMenu.dependencies": "Dependencies",
-  "modMenu.button.website": "Website",
+  "modMenu.button.homePage": "HomePage",
+  "modMenu.button.issues": "Issues",
   "modMenu.button.modMenu": "ModMenu",
-  "modMenu.button.setting": "Setting"
+  "modMenu.button.setting": "Setting",
+  "modMenu.button.update": "Update"
 }
