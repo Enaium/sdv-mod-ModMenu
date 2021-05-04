@@ -132,13 +132,23 @@ namespace ModMenu.Framework.Screen
 
                 if (selectedEntryModMenu != null)
                 {
-                    var settingMenu = Type.GetType(selectedEntryModMenu.Setting);
-
-                    if (settingMenu != null)
+                    if (selectedEntryModMenu.Setting != null)
                     {
                         _settingButton.OnLeftClicked = () =>
                         {
-                            OpenScreenGui(Activator.CreateInstance(settingMenu) as IClickableMenu);
+                            var type = AppDomain.CurrentDomain.GetAssemblies()
+                                .SelectMany(t => t.GetTypes()).Where(t =>
+                                    t.IsClass && selectedEntryModMenu.Setting.Equals(t.FullName)).ToArray();
+
+                            if (type.Length == 1)
+                            {
+                                OpenScreenGui(Activator.CreateInstance(type[0]) as IClickableMenu);
+                            }
+                            else
+                            {
+                                ModEntry.GetInstance().Monitor.Log("Not Found Setting:" + selectedEntryModMenu.Setting,
+                                    LogLevel.Error);
+                            }
                         };
                         _settingButton.Visibled = true;
                     }
