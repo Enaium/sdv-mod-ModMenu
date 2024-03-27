@@ -1,5 +1,4 @@
 ﻿using EnaiumToolKit.Framework.Screen.Components;
-using EnaiumToolKit.Framework.Utils;
 using ModMenu.Framework.Screen;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -29,6 +28,7 @@ namespace ModMenu
                 {
                     Game1.activeClickableMenu = new ModMenuScreen();
                 }
+
                 Game1.playSound("drumkit6");
             }
         };
@@ -39,7 +39,7 @@ namespace ModMenu
             helper.Events.Input.ButtonPressed += OnButton;
         }
 
-        private void OnRendered(object sender, RenderedEventArgs args)
+        private void OnRendered(object? sender, RenderedEventArgs args)
         {
             if (Game1.activeClickableMenu is TitleMenu titleMenu && TitleMenu.subMenu == null &&
                 !GetBool(titleMenu, "isTransitioningButtons") &&
@@ -51,7 +51,7 @@ namespace ModMenu
             }
         }
 
-        private void OnButton(object sender, ButtonPressedEventArgs args)
+        private void OnButton(object? sender, ButtonPressedEventArgs args)
         {
             if (args.Button != SButton.MouseLeft || !_modMenuButton.Hovered) return;
             _modMenuButton.Hovered = false;
