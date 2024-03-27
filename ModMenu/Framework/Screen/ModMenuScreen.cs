@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using EnaiumToolKit;
 using EnaiumToolKit.Framework.Screen;
 using EnaiumToolKit.Framework.Screen.Components;
 using EnaiumToolKit.Framework.Utils;
