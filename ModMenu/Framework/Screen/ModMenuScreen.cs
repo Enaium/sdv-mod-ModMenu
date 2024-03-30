@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection;
 using EnaiumToolKit.Framework.Screen;
 using EnaiumToolKit.Framework.Screen.Components;
 using EnaiumToolKit.Framework.Utils;
@@ -112,7 +113,13 @@ public class ModMenuScreen : GuiScreen
                 var updateUrl = GetPageUrl(updateUrls);
                 if (updateUrl != null)
                 {
-                    _updateButton.OnLeftClicked = () => { Process.Start(updateUrl); };
+                    _updateButton.OnLeftClicked = () =>
+                    {
+                        Process.Start(new ProcessStartInfo(updateUrl)
+                        {
+                            UseShellExecute = true
+                        });
+                    };
                     _updateButton.Visibled = true;
                 }
                 else
@@ -134,6 +141,17 @@ public class ModMenuScreen : GuiScreen
                     _settingButton.OnLeftClicked = () =>
                     {
                         var type = AppDomain.CurrentDomain.GetAssemblies()
+                            .Where(a =>
+                            {
+                                try
+                                {
+                                    return a.GetTypes().Any();
+                                }
+                                catch (ReflectionTypeLoadException)
+                                {
+                                    return false;
+                                }
+                            })
                             .SelectMany(t => t.GetTypes()).Where(t =>
                                 t.IsClass && selectedEntryModMenu.Setting.Equals(t.FullName)).ToArray();
 
