@@ -1,6 +1,3 @@
 ﻿namespace ModMenu.Framework.Entity;
 
-public class CustomEntity
-{
-    public ModMenuEntity? ModMenu { get; set; }
-}
+public record CustomEntity(ModMenuEntity? ModMenu);

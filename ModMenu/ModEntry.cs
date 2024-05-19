@@ -1,4 +1,5 @@
 ﻿using EnaiumToolKit.Framework.Screen.Components;
+using Microsoft.Xna.Framework.Graphics;
 using ModMenu.Framework.Screen;
 using StardewModdingAPI;
 using StardewModdingAPI.Events;
@@ -16,7 +17,7 @@ public class ModEntry : Mod
         _instance = this;
     }
 
-    private Button _modMenuButton = new Button("", "", 20, 80, 200, 80)
+    private readonly Button _modMenuButton = new("", "", 20, 80, 200, 80)
     {
         OnLeftClicked = () =>
         {
@@ -48,6 +49,11 @@ public class ModEntry : Mod
         {
             _modMenuButton.Title = Helper.Translation.Get("modMenu.button.modMenu");
             _modMenuButton.Render(args.SpriteBatch);
+            Game1.activeClickableMenu?.drawMouse(args.SpriteBatch);
+        }
+        else
+        {
+            _modMenuButton.Hovered = false;
         }
     }
 
