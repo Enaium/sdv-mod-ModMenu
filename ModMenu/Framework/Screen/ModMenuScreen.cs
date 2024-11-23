@@ -3,7 +3,6 @@ using System.Reflection;
 using EnaiumToolKit.Framework.Extensions;
 using EnaiumToolKit.Framework.Screen;
 using EnaiumToolKit.Framework.Screen.Components;
-using EnaiumToolKit.Framework.Utils;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ModMenu.Framework.Entity;
@@ -31,7 +30,7 @@ public class ModMenuScreen : GuiScreen
         var measureString = Game1.dialogueFont.MeasureString(mods[0].Manifest.Name);
         var slotHeight = (int)(measureString.Y * 2);
         _slot = new Slot<ModInfoSlot>("", "", 10, 50,
-            (int)measureString.X + 30,
+            (int)measureString.X * 2,
             (Game1.graphics.GraphicsDevice.Viewport.Height - 100) / slotHeight * slotHeight, slotHeight);
 
 
